@@ -240,6 +240,29 @@
                 <x-instructor.cards.course-card :course="$course" />
             @endforeach
         </div>
+        
+        <!-- Pagination -->
+        @if(count($courses) > 6)
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                        Previous
+                    </button>
+                    <button class="px-3 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700">
+                        1
+                    </button>
+                    <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                        2
+                    </button>
+                    <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                        3
+                    </button>
+                    <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                        Next
+                    </button>
+                </nav>
+            </div>
+        @endif
     </section>
 
     <!-- Pending Assignments & Recent Students -->

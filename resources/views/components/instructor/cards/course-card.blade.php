@@ -32,11 +32,7 @@
         <p class="text-gray-600 text-sm mb-4">{{ $course['description'] }}</p>
         
         <!-- Course Stats -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center">
-                <div class="text-2xl font-bold text-blue-600">{{ $course['students'] }}</div>
-                <div class="text-xs text-gray-500">Students</div>
-            </div>
+        <div class="grid grid-cols-1 gap-4 mb-4">
             <div class="text-center">
                 <div class="text-2xl font-bold text-green-600">{{ $course['assignments'] ?? 0 }}</div>
                 <div class="text-xs text-gray-500">Assignments</div>
@@ -45,16 +41,6 @@
         
         
         
-        <!-- Next Class -->
-        <div class="mb-4 p-3 bg-blue-50 rounded-lg">
-            <div class="flex items-center">
-                <i class="fas fa-clock text-blue-600 mr-2"></i>
-                <div>
-                    <div class="text-sm font-medium text-blue-800">Next Class</div>
-                    <div class="text-xs text-blue-600">{{ $course['nextClass'] ?? 'Tomorrow, 9:00 AM' }}</div>
-                </div>
-            </div>
-        </div>
         
         <!-- Action Buttons -->
         <div class="flex space-x-2">

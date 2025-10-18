@@ -52,6 +52,13 @@
             </div>
             <span class="ml-4 font-medium">Resources</span>
         </a>
+        
+        <a href="#" class="flex items-center px-4 py-3 text-white sidebar-item {{ $activeItem === 'analytics' ? 'active' : '' }}" onclick="alert('Analytics feature coming soon!')">
+            <div class="sidebar-icon bg-white bg-opacity-20 w-10 h-10 rounded-xl flex items-center justify-center">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <span class="ml-4 font-medium">Analytics</span>
+        </a>
     </nav>
     
     <div class="p-4 border-t border-white border-opacity-20">

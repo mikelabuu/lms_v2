@@ -17,7 +17,7 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Edit Course</h1>
-                <p class="text-gray-600 mt-2">{{ $courseData['code'] }} • {{ $courseData['enrollment_count'] }} students</p>
+                <p class="text-gray-600 mt-2">{{ $courseData['code'] }}</p>
             </div>
             <div class="flex space-x-3">
                 <a href="{{ route('instructor.course.show', $courseData['id']) }}" class="btn-secondary">
@@ -56,7 +56,7 @@
                               class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent" required>{{ $courseData['description'] }}</textarea>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
                         <select name="difficulty" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent">
@@ -72,12 +72,6 @@
                             <option value="approved" {{ $courseData['status'] == 'approved' ? 'selected' : '' }}>Approved</option>
                             <option value="archived" {{ $courseData['status'] == 'archived' ? 'selected' : '' }}>Archived</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Enrollment Count</label>
-                        <input type="number" name="enrollment_count" value="{{ $courseData['enrollment_count'] }}" 
-                               class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent" readonly>
-                        <p class="text-xs text-gray-500 mt-1">This field is automatically managed</p>
                     </div>
                 </div>
 

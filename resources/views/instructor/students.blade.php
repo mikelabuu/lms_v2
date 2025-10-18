@@ -17,10 +17,6 @@
             <h1 class="text-3xl font-bold text-gray-800">Students</h1>
             <p class="text-gray-600 mt-2">Manage your students across all courses</p>
         </div>
-        <button class="btn-primary">
-            <i class="fas fa-user-plus mr-2"></i>
-            Add Student
-        </button>
     </div>
 
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">

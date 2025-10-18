@@ -17,7 +17,7 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">{{ $courseData['title'] }}</h1>
-                <p class="text-gray-600 mt-2">{{ $courseData['code'] }} • {{ $courseData['enrollment_count'] }} students</p>
+                <p class="text-gray-600 mt-2">{{ $courseData['code'] }}</p>
             </div>
             <div class="flex space-x-3">
                 <button class="btn-secondary">
@@ -33,16 +33,15 @@
 
         <!-- Course Overview -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-blue-600">{{ $courseData['enrollment_count'] }}</div>
-                    <div class="text-sm text-gray-500">Total Students</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-600">{{ $courseData['assignments'] }}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600">{{ $courseData['assignments'] ?? 0 }}</div>
                     <div class="text-sm text-gray-500">Assignments</div>
                 </div>
-                
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600">{{ $courseData['contents'] ?? 0 }}</div>
+                    <div class="text-sm text-gray-500">Course Materials</div>
+                </div>
             </div>
         </div>
   <!-- Course Description -->
@@ -153,76 +152,138 @@
                 </div>
                 <div>
                     <h3 class="font-semibold text-gray-700 mb-3">Existing Contents</h3>
-                    <div class="space-y-3">
-                        @forelse(($contents ?? []) as $item)
-                            <div class="p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1 pr-4">
-                                        <div class="flex items-center space-x-2 mb-1">
-                                            <i class="fas fa-file-pdf text-red-600"></i>
-                                            <h4 class="text-sm font-semibold text-gray-800">{{ $item['title'] }}</h4>
-                                            <span class="text-xs px-2 py-1 rounded-full {{ $item['status'] === 'published' ? 'bg-green-100 text-green-800' : ($item['status'] === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">{{ ucfirst($item['status']) }}</span>
-                                        </div>
-                                        <p class="text-xs text-gray-600 mb-2">{{ $item['description'] }}</p>
-                                        <p class="text-xs text-gray-400">Uploaded: {{ $item['uploaded_at'] }}</p>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <a href="{{ route('course.content.serve', ['instructor' => 'dr-lorenz', 'file' => basename($item['file_path'])]) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
-                                            <i class="fas fa-download mr-1"></i>Download
-                                        </a>
-                                        <button onclick="document.getElementById('edit-{{ $item['id'] }}').classList.toggle('hidden')" class="text-gray-600 hover:text-gray-800 text-sm">
-                                            <i class="fas fa-edit mr-1"></i>Edit
-                                        </button>
-                                        <form method="POST" action="{{ route('instructor.course.content.delete', [request()->route('id'), $item['id']]) }}" onsubmit="return confirm('Delete this content?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="text-red-600 hover:text-red-800 text-sm">
-                                                <i class="fas fa-trash mr-1"></i>Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div id="edit-{{ $item['id'] }}" class="mt-4 hidden">
-                                    <form method="POST" action="{{ route('instructor.course.content.update', [request()->route('id'), $item['id']]) }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        @csrf
-                                        @method('PUT')
-                                        @php
-                                            $editTitleProps = [
-                                                "name"=>"title",
-                                                "label"=>"Title",
-                                                "defaultValue"=>$item["title"],
-                                                "required"=>true
-                                            ];
-                                        @endphp
-                                        <div data-react-component="TextInput" data-props='@json($editTitleProps)'></div>
-                                        @php
-                                            $editStatusOptions = [
-                                                ["label"=>"Draft","value"=>"draft"],
-                                                ["label"=>"Published","value"=>"published"],
-                                                ["label"=>"Archived","value"=>"archived"],
-                                            ];
-                                            $editStatusDefault = collect($editStatusOptions)->firstWhere('value', $item['status']);
-                                            $editStatusProps = ["name"=>"status","label"=>"Status","options"=>$editStatusOptions,"defaultValue"=>$editStatusDefault,"sx"=>["width"=>"100%"]];
-                                        @endphp
-                                        <div data-react-component="SelectAutocomplete" data-props='@json($editStatusProps)'></div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                                            <textarea name="description" rows="2" class="w-full border border-gray-300 rounded-lg p-2" required>{{ $item['description'] }}</textarea>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Replace PDF (optional)</label>
-                                            <input type="file" name="file" accept="application/pdf" class="w-full border border-gray-300 rounded-lg p-2 bg-white">
-                                        </div>
-                                        <div>
-                                            <button class="btn-primary" type="submit"><i class="fas fa-save mr-1"></i>Save</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-sm text-gray-500">No content uploaded yet.</p>
-                        @endforelse
+                    
+                    <!-- Search Bar for Resources -->
+                    <div class="mb-4">
+                        <div class="relative max-w-sm">
+                            <input type="text" id="resource-search" placeholder="Search resources..." 
+                                   class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
                     </div>
+                    
+                    <!-- Resources Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resources-table-body" class="bg-white divide-y divide-gray-200">
+                                @forelse(($contents ?? []) as $item)
+                                    <tr class="resource-row hover:bg-gray-50" data-title="{{ strtolower($item['title']) }}" data-description="{{ strtolower($item['description']) }}">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-file-pdf text-red-600 mr-2"></i>
+                                                <div class="text-sm font-medium text-gray-800">{{ $item['title'] }}</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="text-sm text-gray-600 max-w-xs truncate">{{ $item['description'] }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="text-xs px-2 py-1 rounded-full {{ $item['status'] === 'published' ? 'bg-green-100 text-green-800' : ($item['status'] === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
+                                                {{ ucfirst($item['status']) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $item['uploaded_at'] }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-2">
+                                                <a href="{{ route('course.content.serve', ['instructor' => 'dr-lorenz', 'file' => basename($item['file_path'])]) }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                <button onclick="document.getElementById('edit-{{ $item['id'] }}').classList.toggle('hidden')" class="text-gray-600 hover:text-gray-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <form method="POST" action="{{ route('instructor.course.content.delete', [request()->route('id'), $item['id']]) }}" onsubmit="return confirm('Delete this content?');" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="text-red-600 hover:text-red-800">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500 text-sm">
+                                            <i class="fas fa-file-pdf text-4xl mb-4 text-gray-300"></i>
+                                            <div class="text-lg font-medium">No resources uploaded yet</div>
+                                            <div class="text-sm">Upload your first course material to get started.</div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination for Resources -->
+                    @if(count($contents ?? []) > 5)
+                        <div class="mt-4 flex justify-center">
+                            <nav class="flex items-center space-x-2">
+                                <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                                    Previous
+                                </button>
+                                <button class="px-3 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700">
+                                    1
+                                </button>
+                                <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                                    2
+                                </button>
+                                <button class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700">
+                                    Next
+                                </button>
+                            </nav>
+                        </div>
+                    @endif
+                    
+                    <!-- Edit Forms (Hidden by default) -->
+                    @foreach(($contents ?? []) as $item)
+                        <div id="edit-{{ $item['id'] }}" class="mt-4 hidden">
+                            <form method="POST" action="{{ route('instructor.course.content.update', [request()->route('id'), $item['id']]) }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @csrf
+                                @method('PUT')
+                                @php
+                                    $editTitleProps = [
+                                        "name"=>"title",
+                                        "label"=>"Title",
+                                        "defaultValue"=>$item["title"],
+                                        "required"=>true
+                                    ];
+                                @endphp
+                                <div data-react-component="TextInput" data-props='@json($editTitleProps)'></div>
+                                @php
+                                    $editStatusOptions = [
+                                        ["label"=>"Draft","value"=>"draft"],
+                                        ["label"=>"Published","value"=>"published"],
+                                        ["label"=>"Archived","value"=>"archived"],
+                                    ];
+                                    $editStatusDefault = collect($editStatusOptions)->firstWhere('value', $item['status']);
+                                    $editStatusProps = ["name"=>"status","label"=>"Status","options"=>$editStatusOptions,"defaultValue"=>$editStatusDefault,"sx"=>["width"=>"100%"]];
+                                @endphp
+                                <div data-react-component="SelectAutocomplete" data-props='@json($editStatusProps)'></div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea name="description" rows="2" class="w-full border border-gray-300 rounded-lg p-2" required>{{ $item['description'] }}</textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Replace PDF (optional)</label>
+                                    <input type="file" name="file" accept="application/pdf" class="w-full border border-gray-300 rounded-lg p-2 bg-white">
+                                </div>
+                                <div>
+                                    <button class="btn-primary" type="submit"><i class="fas fa-save mr-1"></i>Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -243,7 +304,7 @@
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.1s ease;
             background-color: #f9fafb;
         }
 
@@ -272,8 +333,28 @@
     </style>
 
     <script>
-        // File upload functionality
+        // File upload functionality and resource search
         document.addEventListener('DOMContentLoaded', function() {
+            // Resource search functionality
+            const resourceSearchInput = document.getElementById('resource-search');
+            const resourceRows = document.querySelectorAll('.resource-row');
+
+            if (resourceSearchInput && resourceRows.length > 0) {
+                resourceSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    
+                    resourceRows.forEach(function(row) {
+                        const title = row.getAttribute('data-title');
+                        const description = row.getAttribute('data-description');
+                        
+                        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
             const form = document.getElementById('content-upload-form');
             const fileInput = document.getElementById('file-input');
             const dropZone = document.getElementById('file-drop-zone');
@@ -440,3 +521,4 @@
         });
     </script>
 </x-instructor.layout.app>
+
