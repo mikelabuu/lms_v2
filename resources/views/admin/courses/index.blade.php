@@ -132,6 +132,9 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Pagination -->
+        <x-pagination-compact :paginator="$courses" />
     </div>
 
     <!-- Delete Form -->

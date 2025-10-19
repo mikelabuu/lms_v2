@@ -85,9 +85,7 @@ Route::prefix('student')->name('student.')->group(function () {
         return view('student.discussions');
     })->name('discussions');
     
-    Route::get('/resources', function () {
-        return view('student.resources');
-    })->name('resources');
+    Route::get('/resources', [StudentController::class, 'resources'])->name('resources');
 });
 
 // Instructor Routes

@@ -1,8 +1,7 @@
 @props([
     'user' => ['name' => 'John'],
     'currentDate' => null,
-    'currentTime' => null,
-    'semester' => '1st Sem 2025-2026'
+    'currentTime' => null
 ])
 
 <header class="header glass-effect">

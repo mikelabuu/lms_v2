@@ -89,7 +89,7 @@ class AdminController extends Controller
 
         $instructors = User::where('role', 'instructor')
             ->withCount('taughtCourses')
-            ->get();
+            ->paginate(10);
 
         $user = $this->getCurrentUser();
 
@@ -179,7 +179,7 @@ class AdminController extends Controller
 
         $students = User::where('role', 'student')
             ->withCount('enrollments')
-            ->get();
+            ->paginate(10);
 
         $user = $this->getCurrentUser();
 
@@ -269,7 +269,7 @@ class AdminController extends Controller
 
         $courses = Course::with('instructor')
             ->withCount('enrollments')
-            ->get();
+            ->paginate(10);
 
         $user = $this->getCurrentUser();
 

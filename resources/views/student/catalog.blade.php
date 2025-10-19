@@ -37,6 +37,13 @@
             </div>
         @endforelse
     </div>
+
+    <!-- Pagination -->
+    @if($availableCourses->hasPages())
+        <div class="mt-8">
+            <x-pagination-enhanced :paginator="$availableCourses" />
+        </div>
+    @endif
 </x-student.layout.app>
 
 

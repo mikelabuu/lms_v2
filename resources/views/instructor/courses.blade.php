@@ -41,6 +41,11 @@
         @endforeach
     </div>
 
+    <!-- Pagination -->
+    <div class="mt-8">
+        <x-pagination-enhanced :paginator="$allCourses" />
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('course-search');

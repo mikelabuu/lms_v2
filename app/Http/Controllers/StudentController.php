@@ -287,10 +287,26 @@ class StudentController extends Controller
 
         $notifications = ['courses' => 5, 'assignments' => 2];
         
-        // Get enrolled courses from database
+        // Get enrolled courses from database with pagination
         $enrollmentController = new EnrollmentController();
         $studentId = auth()->id() ?? \App\Models\User::where('role', 'student')->first()->id ?? 1;
-        $enrolledCourses = $enrollmentController->getEnrolledCourses($studentId);
+        
+        // Get enrolled courses with pagination
+        $enrolledCourses = Enrollment::with(['course', 'course.instructor'])
+            ->where('student_id', $studentId)
+            ->where('status', 'active')
+            ->paginate(6)
+            ->through(function ($enrollment) {
+                return [
+                    'id' => $enrollment->course->id,
+                    'title' => $enrollment->course->title,
+                    'code' => $enrollment->course->code,
+                    'description' => $enrollment->course->description,
+                    'instructor' => $enrollment->course->instructor->name,
+                    'enrolled_at' => $enrollment->enrolled_at->format('M j, Y'),
+                    'status' => $enrollment->status,
+                ];
+            });
         
         return view('student.courses', compact('user', 'notifications', 'enrolledCourses'));
     }
@@ -499,12 +515,268 @@ class StudentController extends Controller
 
         $notifications = ['courses' => 5, 'assignments' => 2];
         
-        // Get available courses from database
+        // Get available courses from database with pagination
         $enrollmentController = new EnrollmentController();
         $studentId = auth()->id() ?? \App\Models\User::where('role', 'student')->first()->id ?? 1;
         
-        $availableCourses = $enrollmentController->getAvailableCourses($studentId);
+        // Get enrolled course IDs to exclude them from available courses
+        $enrolledCourseIds = Enrollment::where('student_id', $studentId)
+            ->pluck('course_id')
+            ->toArray();
+
+        // Get available courses with pagination
+        $availableCourses = Course::with('instructor')
+            ->where('status', 'approved')
+            ->whereNotIn('id', $enrolledCourseIds)
+            ->paginate(6)
+            ->through(function ($course) {
+                return [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'code' => $course->code,
+                    'description' => $course->description,
+                    'instructor' => $course->instructor->name,
+                    'enrollment_count' => $course->enrollment_count,
+                    'difficulty' => $course->difficulty,
+                ];
+            });
         
         return view('student.catalog', compact('user', 'notifications', 'availableCourses'));
+    }
+
+    public function resources()
+    {
+        $user = [
+            'name' => 'Francis',
+            'program' => 'BS Computer Science',
+            'initials' => 'JD'
+        ];
+        
+        $notifications = ['courses' => 5, 'assignments' => 2];
+        
+        // Sample resources data - in real app, this would come from database
+        $allResources = [
+            [
+                'id' => 1,
+                'name' => 'Introduction to Programming',
+                'description' => 'Basic programming concepts and syntax',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 101',
+                'instructor' => 'Dr. Smith',
+                'uploaded_at' => now()->subDays(5)
+            ],
+            [
+                'id' => 2,
+                'name' => 'Data Structures Lecture',
+                'description' => 'Video lecture on arrays and linked lists',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 201',
+                'instructor' => 'Dr. Johnson',
+                'uploaded_at' => now()->subDays(3)
+            ],
+            [
+                'id' => 3,
+                'name' => 'Algorithm Flowchart',
+                'description' => 'Visual representation of sorting algorithms',
+                'type' => 'image',
+                'icon' => 'fas fa-image',
+                'course' => 'CS 301',
+                'instructor' => 'Dr. Williams',
+                'uploaded_at' => now()->subDays(1)
+            ],
+            [
+                'id' => 4,
+                'name' => 'Database Design Guide',
+                'description' => 'Comprehensive guide to database normalization',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'instructor' => 'Dr. Johnson',
+                'uploaded_at' => now()->subDays(7)
+            ],
+            [
+                'id' => 5,
+                'name' => 'Network Security Tutorial',
+                'description' => 'Step-by-step security implementation guide',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 301',
+                'instructor' => 'Dr. Williams',
+                'uploaded_at' => now()->subDays(2)
+            ],
+            [
+                'id' => 6,
+                'name' => 'Web Development Fundamentals',
+                'description' => 'HTML, CSS, and JavaScript basics',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 101',
+                'instructor' => 'Dr. Smith',
+                'uploaded_at' => now()->subDays(4)
+            ],
+            [
+                'id' => 7,
+                'name' => 'Machine Learning Overview',
+                'description' => 'Introduction to AI and ML concepts',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(6)
+            ],
+            [
+                'id' => 8,
+                'name' => 'Mobile App Development',
+                'description' => 'React Native tutorial series',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(8)
+            ],
+            [
+                'id' => 9,
+                'name' => 'Software Engineering Process',
+                'description' => 'SDLC and project management',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'instructor' => 'Dr. Johnson',
+                'uploaded_at' => now()->subDays(9)
+            ],
+            [
+                'id' => 10,
+                'name' => 'Cybersecurity Basics',
+                'description' => 'Network security and encryption',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 301',
+                'instructor' => 'Dr. Williams',
+                'uploaded_at' => now()->subDays(10)
+            ],
+            [
+                'id' => 11,
+                'name' => 'Cloud Computing Guide',
+                'description' => 'AWS and Azure fundamentals',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(11)
+            ],
+            [
+                'id' => 12,
+                'name' => 'DevOps Practices',
+                'description' => 'CI/CD and deployment strategies',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(12)
+            ],
+            [
+                'id' => 13,
+                'name' => 'Advanced Algorithms',
+                'description' => 'Complex algorithm analysis and design',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 301',
+                'instructor' => 'Dr. Williams',
+                'uploaded_at' => now()->subDays(13)
+            ],
+            [
+                'id' => 14,
+                'name' => 'Database Optimization',
+                'description' => 'Performance tuning and indexing strategies',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 201',
+                'instructor' => 'Dr. Johnson',
+                'uploaded_at' => now()->subDays(14)
+            ],
+            [
+                'id' => 15,
+                'name' => 'UI/UX Design Principles',
+                'description' => 'User interface and experience design',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 101',
+                'instructor' => 'Dr. Smith',
+                'uploaded_at' => now()->subDays(15)
+            ],
+            [
+                'id' => 16,
+                'name' => 'API Development',
+                'description' => 'RESTful API design and implementation',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(16)
+            ],
+            [
+                'id' => 17,
+                'name' => 'Testing Strategies',
+                'description' => 'Unit testing and quality assurance',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'instructor' => 'Dr. Johnson',
+                'uploaded_at' => now()->subDays(17)
+            ],
+            [
+                'id' => 18,
+                'name' => 'Version Control with Git',
+                'description' => 'Git workflow and collaboration',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 101',
+                'instructor' => 'Dr. Smith',
+                'uploaded_at' => now()->subDays(18)
+            ],
+            [
+                'id' => 19,
+                'name' => 'Docker Containerization',
+                'description' => 'Container deployment and management',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'instructor' => 'Dr. Brown',
+                'uploaded_at' => now()->subDays(19)
+            ],
+            [
+                'id' => 20,
+                'name' => 'System Architecture',
+                'description' => 'Scalable system design patterns',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 301',
+                'instructor' => 'Dr. Williams',
+                'uploaded_at' => now()->subDays(20)
+            ]
+        ];
+
+        // Manual pagination
+        $perPage = 10;
+        $currentPage = request()->get('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $items = array_slice($allResources, $offset, $perPage);
+        $total = count($allResources);
+        $lastPage = ceil($total / $perPage);
+        
+        $resources = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
+        
+        return view('student.resources', compact('user', 'notifications', 'resources'));
     }
 }

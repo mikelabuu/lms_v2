@@ -144,11 +144,9 @@ class InstructorController extends Controller
                 'code' => $course->code,
                 'description' => $course->description,
                 'instructor' => 'Dr. Lorenz', // Default instructor name
-                'enrollment_count' => $course->enrollment_count,
                 'difficulty' => $course->difficulty,
                 'status' => $course->status,
                 'icon' => 'fas fa-book',
-                'students' => $course->enrollment_count,
                 'assignments' => 8, // Default assignment count
                 'progress' => rand(20, 90) // Random progress for demo
             ];
@@ -239,26 +237,261 @@ class InstructorController extends Controller
         
         $notifications = ['assignments' => 8, 'students' => 3];
         
-        // Get courses from database
-        $allCourses = Course::all()->map(function ($course) {
-            return [
-                'id' => $course->id,
-                'title' => $course->title,
-                'code' => $course->code,
-                'description' => $course->description,
-                'instructor' => 'Dr. Lorenz', // Default instructor name
-                'enrollment_count' => $course->enrollment_count,
+        // Get courses from database with pagination
+        $allCourses = Course::withCount('enrollments')
+            ->paginate(6)
+            ->through(function ($course) {
+                return [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'code' => $course->code,
+                    'description' => $course->description,
+                    'instructor' => 'Dr. Lorenz', // Default instructor name
                 'difficulty' => $course->difficulty,
                 'status' => $course->status,
                 'created_at' => $course->created_at,
                 'icon' => 'fas fa-book',
-                'students' => $course->enrollment_count,
-                'assignments' => 8,
-                'nextClass' => 'Tomorrow, 9:00 AM'
-            ];
-        });
+                'assignments' => 8
+                ];
+            });
         
         return view('instructor.courses', compact('user', 'notifications', 'allCourses'));
+    }
+
+    public function resources()
+    {
+        $user = [
+            'name' => 'Dr. Lorenz',
+            'department' => 'Computer Science',
+            'initials' => 'JS'
+        ];
+        
+        $notifications = ['assignments' => 8, 'students' => 3];
+        
+        // Sample resources data - in real app, this would come from database
+        $allResources = [
+            [
+                'id' => 1,
+                'name' => 'Introduction to Programming',
+                'description' => 'Basic programming concepts and syntax',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 101',
+                'size' => '2.5 MB',
+                'uploaded_at' => now()->subDays(5)
+            ],
+            [
+                'id' => 2,
+                'name' => 'Data Structures Lecture',
+                'description' => 'Video lecture on arrays and linked lists',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 201',
+                'size' => '45.2 MB',
+                'uploaded_at' => now()->subDays(3)
+            ],
+            [
+                'id' => 3,
+                'name' => 'Algorithm Flowchart',
+                'description' => 'Visual representation of sorting algorithms',
+                'type' => 'image',
+                'icon' => 'fas fa-image',
+                'course' => 'CS 301',
+                'size' => '1.8 MB',
+                'uploaded_at' => now()->subDays(1)
+            ],
+            [
+                'id' => 4,
+                'name' => 'Database Design Principles',
+                'description' => 'Comprehensive guide to database normalization',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'size' => '3.2 MB',
+                'uploaded_at' => now()->subDays(7)
+            ],
+            [
+                'id' => 5,
+                'name' => 'Web Development Tutorial',
+                'description' => 'HTML, CSS, and JavaScript fundamentals',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 101',
+                'size' => '120.5 MB',
+                'uploaded_at' => now()->subDays(2)
+            ],
+            [
+                'id' => 6,
+                'name' => 'Network Security Guide',
+                'description' => 'Step-by-step security implementation',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 301',
+                'size' => 'N/A',
+                'uploaded_at' => now()->subDays(4)
+            ],
+            [
+                'id' => 7,
+                'name' => 'Machine Learning Basics',
+                'description' => 'Introduction to AI and ML concepts',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 401',
+                'size' => '4.8 MB',
+                'uploaded_at' => now()->subDays(6)
+            ],
+            [
+                'id' => 8,
+                'name' => 'Mobile App Development',
+                'description' => 'React Native tutorial series',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'size' => '200.3 MB',
+                'uploaded_at' => now()->subDays(8)
+            ],
+            [
+                'id' => 9,
+                'name' => 'Software Engineering Process',
+                'description' => 'SDLC and project management',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'size' => '2.1 MB',
+                'uploaded_at' => now()->subDays(9)
+            ],
+            [
+                'id' => 10,
+                'name' => 'Cybersecurity Fundamentals',
+                'description' => 'Network security and encryption',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 301',
+                'size' => '85.7 MB',
+                'uploaded_at' => now()->subDays(10)
+            ],
+            [
+                'id' => 11,
+                'name' => 'Cloud Computing Overview',
+                'description' => 'AWS and Azure basics',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 401',
+                'size' => '3.9 MB',
+                'uploaded_at' => now()->subDays(11)
+            ],
+            [
+                'id' => 12,
+                'name' => 'DevOps Practices',
+                'description' => 'CI/CD and deployment strategies',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 401',
+                'size' => 'N/A',
+                'uploaded_at' => now()->subDays(12)
+            ],
+            [
+                'id' => 13,
+                'name' => 'Advanced Algorithms',
+                'description' => 'Complex algorithm analysis and design',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 301',
+                'size' => '5.2 MB',
+                'uploaded_at' => now()->subDays(13)
+            ],
+            [
+                'id' => 14,
+                'name' => 'Database Optimization',
+                'description' => 'Performance tuning and indexing strategies',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 201',
+                'size' => '95.3 MB',
+                'uploaded_at' => now()->subDays(14)
+            ],
+            [
+                'id' => 15,
+                'name' => 'UI/UX Design Principles',
+                'description' => 'User interface and experience design',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 101',
+                'size' => '3.7 MB',
+                'uploaded_at' => now()->subDays(15)
+            ],
+            [
+                'id' => 16,
+                'name' => 'API Development',
+                'description' => 'RESTful API design and implementation',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'size' => '150.8 MB',
+                'uploaded_at' => now()->subDays(16)
+            ],
+            [
+                'id' => 17,
+                'name' => 'Testing Strategies',
+                'description' => 'Unit testing and quality assurance',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 201',
+                'size' => '2.9 MB',
+                'uploaded_at' => now()->subDays(17)
+            ],
+            [
+                'id' => 18,
+                'name' => 'Version Control with Git',
+                'description' => 'Git workflow and collaboration',
+                'type' => 'link',
+                'icon' => 'fas fa-external-link-alt',
+                'course' => 'CS 101',
+                'size' => 'N/A',
+                'uploaded_at' => now()->subDays(18)
+            ],
+            [
+                'id' => 19,
+                'name' => 'Docker Containerization',
+                'description' => 'Container deployment and management',
+                'type' => 'video',
+                'icon' => 'fas fa-video',
+                'course' => 'CS 401',
+                'size' => '180.2 MB',
+                'uploaded_at' => now()->subDays(19)
+            ],
+            [
+                'id' => 20,
+                'name' => 'System Architecture',
+                'description' => 'Scalable system design patterns',
+                'type' => 'document',
+                'icon' => 'fas fa-file-pdf',
+                'course' => 'CS 301',
+                'size' => '4.1 MB',
+                'uploaded_at' => now()->subDays(20)
+            ]
+        ];
+
+        // Manual pagination
+        $perPage = 10;
+        $currentPage = request()->get('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $items = array_slice($allResources, $offset, $perPage);
+        $total = count($allResources);
+        $lastPage = ceil($total / $perPage);
+        
+        $resources = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
+        
+        return view('instructor.resources', compact('user', 'notifications', 'resources'));
     }
 
     public function showCourse($id)
@@ -455,19 +688,6 @@ class InstructorController extends Controller
         $notifications = ['assignments' => 8, 'students' => 3];
         
         return view('instructor.discussions', compact('user', 'notifications'));
-    }
-
-    public function resources()
-    {
-        $user = [
-            'name' => 'Dr. Lorenz',
-            'department' => 'Computer Science',
-            'initials' => 'JS'
-        ];
-        
-        $notifications = ['assignments' => 8, 'students' => 3];
-        
-        return view('instructor.resources', compact('user', 'notifications'));
     }
 
     public function schedule()

@@ -33,14 +33,18 @@
 
         <!-- Course Overview -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="text-center p-4 bg-blue-50 rounded-lg">
-                    <div class="text-3xl font-bold text-blue-600">{{ $courseData['assignments'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Assignments</div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-700">{{ $courseData['assignments'] ?? 0 }}</div>
+                    <div class="text-sm text-gray-600">Assignments</div>
                 </div>
-                <div class="text-center p-4 bg-green-50 rounded-lg">
-                    <div class="text-3xl font-bold text-green-600">{{ $courseData['contents'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">Course Materials</div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-700">{{ $courseData['contents'] ?? 0 }}</div>
+                    <div class="text-sm text-gray-600">Materials</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-700">{{ count($students ?? []) }}</div>
+                    <div class="text-sm text-gray-600">Students</div>
                 </div>
             </div>
         </div>
@@ -304,7 +308,6 @@
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.1s ease;
             background-color: #f9fafb;
         }
 
@@ -498,7 +501,7 @@
 
             function showNotification(message, type) {
                 const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300 ${
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
                     type === 'success' ? 'bg-green-500 text-white' : 
                     type === 'error' ? 'bg-red-500 text-white' : 
                     'bg-blue-500 text-white'
@@ -506,16 +509,8 @@
                 notification.textContent = message;
                 document.body.appendChild(notification);
                 
-                // Animate in
                 setTimeout(() => {
-                    notification.style.transform = 'translateX(0)';
-                }, 100);
-                
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(100%)';
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 300);
+                    notification.remove();
                 }, 3000);
             }
         });

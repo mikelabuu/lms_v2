@@ -64,6 +64,13 @@
         @endforeach
     </div>
 
+    <!-- Pagination -->
+    @if($enrolledCourses->hasPages())
+        <div class="mt-8">
+            <x-pagination-enhanced :paginator="$enrolledCourses" />
+        </div>
+    @endif
+
     <!-- Empty State (if no courses) -->
     @if(empty($enrolledCourses))
         <div class="text-center py-12">

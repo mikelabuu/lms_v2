@@ -1,0 +1,74 @@
+/* Enhanced Pagination Styles */
+.pagination-container {
+    @apply flex items-center justify-between;
+}
+
+.pagination-info {
+    @apply text-sm text-gray-700;
+}
+
+.pagination-info .font-medium {
+    @apply text-blue-600;
+}
+
+.pagination-buttons {
+    @apply flex items-center space-x-1;
+}
+
+.pagination-btn {
+    @apply inline-flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg;
+}
+
+.pagination-btn-default {
+    @apply text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900;
+}
+
+.pagination-btn-active {
+    @apply text-white bg-blue-600 border border-blue-600 shadow-sm;
+}
+
+.pagination-btn-disabled {
+    @apply text-gray-400 bg-gray-100 border border-gray-300 cursor-not-allowed;
+}
+
+.pagination-btn-compact {
+    @apply px-2 py-1 text-xs;
+}
+
+.pagination-btn-compact svg {
+    @apply w-3 h-3;
+}
+
+.pagination-btn-full svg {
+    @apply w-4 h-4;
+}
+
+/* Hover effects */
+.pagination-btn:not(.pagination-btn-disabled):hover {
+    @apply transform scale-105 shadow-md;
+}
+
+/* Focus states */
+.pagination-btn:focus {
+    @apply outline-none ring-2 ring-blue-500;
+}
+
+/* Animation for page changes */
+.pagination-transition {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .pagination-container {
+        @apply flex-col space-y-4;
+    }
+    
+    .pagination-info {
+        @apply text-center;
+    }
+    
+    .pagination-buttons {
+        @apply justify-center;
+    }
+}

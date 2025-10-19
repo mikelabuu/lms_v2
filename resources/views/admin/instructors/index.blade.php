@@ -136,6 +136,9 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Pagination -->
+        <x-pagination-compact :paginator="$instructors" />
     </div>
 
     <!-- Delete Form -->
